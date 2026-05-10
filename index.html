@@ -15,7 +15,7 @@
         body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
         body::before {
             content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background-image: linear-gradient(rgba(79,142,247,.025) 1px,transparent 1px), linear-gradient(90deg,rgba(79,142,247,.025) 1px,transparent 1px);
+            background-image: linear-gradient(rgba(79,142,247,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(79,142,247,.025) 1px,transparent 1px);
             background-size: 50px 50px;
         }
 
@@ -71,18 +71,29 @@
         .plogo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
         .pname { font-size: .78rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
 
-        /* MOVIES VIEW */
-        #movies-view { display: none; }
+        /* CATALOG VIEW */
+        #catalog-view { display: none; }
         .phero {
-            display: flex; align-items: center; gap: 18px; margin-bottom: 36px;
-            padding: 24px 28px; background: var(--surface); border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 18px; margin-bottom: 28px;
+            padding: 22px 28px; background: var(--surface); border: 1px solid var(--border);
             border-radius: 18px; border-left: 5px solid var(--pc, #4f8ef7);
         }
         .phero img { height: 36px; object-fit: contain; filter: brightness(0) invert(1); }
         .phero h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 2px; }
-        .phero p { color: var(--muted); font-size: .88rem; margin-top: 3px; }
+        .phero p { color: var(--muted); font-size: .85rem; margin-top: 3px; }
 
-        #movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap: 18px; }
+        /* TAB PILLS */
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .tab {
+            padding: 8px 20px; border-radius: 20px; border: 1px solid var(--border);
+            background: var(--surface2); color: var(--muted); font-size: .85rem;
+            font-weight: 600; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif;
+        }
+        .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .tab:hover:not(.active) { border-color: rgba(255,255,255,.2); color: var(--text); }
+
+        #catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap: 18px; }
+
         .mcard {
             background: var(--surface); border-radius: 14px; overflow: hidden;
             border: 1px solid var(--border); cursor: pointer;
@@ -90,6 +101,12 @@
         }
         .mcard:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,.5); }
         .mcard img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: var(--surface2); }
+        .mcard-type {
+            position: absolute; top: 8px; left: 8px;
+            font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 6px; background: rgba(0,0,0,.7); color: #aaa;
+        }
+        .mcard-wrap { position: relative; }
         .minfo { padding: 11px 13px 14px; }
         .mtitle { font-size: .85rem; font-weight: 600; line-height: 1.3; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mmeta { font-size: .76rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
@@ -109,25 +126,25 @@
         .rorig { font-size: .78rem; color: var(--muted); }
         .rpills { display: flex; flex-wrap: wrap; gap: 5px; }
         .pill { font-size: .71rem; font-weight: 600; letter-spacing: .4px; padding: 3px 10px; border-radius: 20px; border: 1px solid; }
+        .pill-type { background: var(--surface2); color: var(--muted); border-color: var(--border); font-size: .65rem; letter-spacing: 1px; text-transform: uppercase; }
         .pill-none { color: var(--muted); border-color: var(--border); }
         .roverview { font-size: .83rem; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .rmeta { font-size: .79rem; color: var(--muted); display: flex; align-items: center; gap: 10px; }
 
         /* STATES */
-        @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        .spinner-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 70px 0; color: var(--muted); grid-column: 1/-1; }
+        @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .spin-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 70px 0; color: var(--muted); grid-column: 1/-1; }
         .spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ERROR BOX — visible en pantalla */
         .err-block {
             background: rgba(192,57,43,.12); border: 1px solid rgba(192,57,43,.4);
-            border-radius: 14px; padding: 24px 28px; margin-bottom: 20px;
-            grid-column: 1/-1;
+            border-radius: 14px; padding: 24px 28px; margin-bottom: 20px; grid-column: 1/-1;
         }
         .err-block h3 { color: #e74c3c; font-size: 1rem; margin-bottom: 10px; }
-        .err-block code { font-family: monospace; font-size: .82rem; color: #ff9999; word-break: break-all; }
-        .err-block p { color: var(--muted); font-size: .85rem; margin-top: 12px; line-height: 1.5; }
+        .err-block code { font-family: monospace; font-size: .82rem; color: #ff9999; word-break: break-all; display: block; }
+        .err-block p { color: var(--muted); font-size: .85rem; margin-top: 12px; line-height: 1.6; }
+        .err-block strong { color: var(--text); }
 
         @media (max-width: 640px) {
             header { padding: 12px 16px; flex-wrap: wrap; }
@@ -145,7 +162,7 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        <input type="text" id="search-input" placeholder="Buscar en todas las plataformas..." autocomplete="off">
+        <input type="text" id="search-input" placeholder="Buscar películas y series en todas las plataformas..." autocomplete="off">
     </div>
     <button id="back-btn" onclick="showHome()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
@@ -157,17 +174,22 @@
     <!-- HOME -->
     <div id="home-view">
         <div class="sec-title">Plataformas</div>
-        <div class="sec-sub">Elegí una plataforma para explorar su catálogo</div>
+        <div class="sec-sub">Elegí una plataforma para explorar películas y series</div>
         <div id="platform-grid"></div>
     </div>
 
-    <!-- MOVIES -->
-    <div id="movies-view">
+    <!-- CATALOG -->
+    <div id="catalog-view">
         <div class="phero" id="phero">
             <img id="hero-logo" src="" alt="">
-            <div><h2 id="hero-name"></h2><p id="hero-sub">Cargando...</p></div>
+            <div><h2 id="hero-name"></h2><p id="hero-sub"></p></div>
         </div>
-        <div id="movies-grid"></div>
+        <div class="tabs">
+            <button class="tab active" id="tab-all"   onclick="switchTab('all')">Todo</button>
+            <button class="tab"        id="tab-movie" onclick="switchTab('movie')">Películas</button>
+            <button class="tab"        id="tab-tv"    onclick="switchTab('tv')">Series</button>
+        </div>
+        <div id="catalog-grid"></div>
     </div>
 
     <!-- SEARCH -->
@@ -181,11 +203,13 @@
 </main>
 
 <script>
-// ─── CONFIGURACIÓN ────────────────────────────────────────────
+// ─── CONFIG ──────────────────────────────────────────────────────
 const API_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce';
 const BASE    = 'https://api.themoviedb.org/3';
 const IMG     = 'https://image.tmdb.org/t/p/w342';
 const LANG    = 'es-AR';
+// Regiones a consultar para watch_providers (de más relevante a menos)
+const REGIONS = ['AR','US','MX','ES','BR'];
 
 const PLATFORMS = [
     { id:'netflix', name:'Netflix',      pid:8,   color:'#E50914', logo:'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
@@ -194,9 +218,11 @@ const PLATFORMS = [
     { id:'max',     name:'Max',           pid:384, color:'#8B5CF6', logo:'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg' },
 ];
 
-let searchTimer = null;
+let searchTimer  = null;
+let allItems     = [];   // todos los items cargados del catálogo
+let currentTab   = 'all';
 
-// ─── FETCH HELPER ─────────────────────────────────────────────
+// ─── FETCH ───────────────────────────────────────────────────────
 async function tmdb(path, params={}) {
     const url = new URL(BASE + path);
     url.searchParams.set('api_key', API_KEY);
@@ -204,55 +230,73 @@ async function tmdb(path, params={}) {
     Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
     const r = await fetch(url.toString());
     const json = await r.json();
-    // TMDB devuelve status_message en errores
-    if (!r.ok || json.status_code) {
-        throw new Error(json.status_message || `HTTP ${r.status}`);
-    }
+    if (!r.ok || json.status_code) throw new Error(json.status_message || `HTTP ${r.status}`);
     return json;
 }
 
-// ─── ERROR BLOCK ──────────────────────────────────────────────
+// Trae items de discover para un tipo ('movie' o 'tv') y provider dado, uniendo múltiples regiones
+async function discoverByProvider(pid, type) {
+    const seen = new Set();
+    const items = [];
+    for (const region of REGIONS) {
+        try {
+            const data = await tmdb(`/discover/${type}`, {
+                sort_by: 'popularity.desc',
+                with_watch_providers: pid,
+                watch_region: region,
+                page: 1
+            });
+            for (const m of (data.results||[])) {
+                if (!seen.has(m.id) && m.poster_path) {
+                    seen.add(m.id);
+                    items.push({ ...m, _type: type });
+                }
+            }
+        } catch { /* región sin datos */ }
+        if (items.length >= 40) break;
+    }
+    return items;
+}
+
+// ─── HELPERS UI ──────────────────────────────────────────────────
+function spinnerHTML(msg='Cargando...') {
+    return `<div class="spin-wrap"><div class="spinner"></div><span>${msg}</span></div>`;
+}
+
 function errBlock(err) {
     return `<div class="err-block" style="grid-column:1/-1">
         <h3>⚠ Error al conectar con TMDB</h3>
         <code>${err.message || err}</code>
-        <p>Posibles causas:
-        <br>• La API Key no es válida o expiró
-        <br>• El archivo se está abriendo como <strong>file://</strong> en lugar de un servidor local (Chrome bloquea fetch en file://)
-        <br>• No hay conexión a Internet
-        <br><br>Solución rápida: abrí una terminal en la carpeta del archivo y ejecutá:<br>
-        <code>python3 -m http.server 8080</code><br>
-        Luego abrí <strong>http://localhost:8080</strong> en el navegador.</p>
+        <p>Posibles causas:<br>
+        • Archivo abierto como <strong>file://</strong> — Chrome bloquea fetch. Usá un servidor local:<br>
+        <code>python3 -m http.server 8080</code> y entrá a <strong>http://localhost:8080</strong><br>
+        • API Key inválida o expirada<br>
+        • Sin conexión a Internet</p>
     </div>`;
 }
 
-// ─── SPINNER ──────────────────────────────────────────────────
-function spinnerHTML(msg='Cargando...') {
-    return `<div class="spinner-wrap"><div class="spinner"></div><span>${msg}</span></div>`;
-}
-
-// ─── NAVEGACIÓN ───────────────────────────────────────────────
 function showView(v) {
-    document.getElementById('home-view').style.display   = v==='home'   ? '' : 'none';
-    document.getElementById('movies-view').style.display = v==='movies' ? '' : 'none';
-    document.getElementById('search-view').style.display = v==='search' ? '' : 'none';
-    document.getElementById('back-btn').style.display    = v!=='home'   ? 'flex' : 'none';
+    ['home','catalog','search'].forEach(n => {
+        document.getElementById(n+'-view').style.display = v===n ? '' : 'none';
+    });
+    document.getElementById('back-btn').style.display = v!=='home' ? 'flex' : 'none';
 }
 
 function showHome() {
     document.getElementById('search-input').value = '';
     clearTimeout(searchTimer);
+    allItems = [];
     showView('home');
 }
 
-// ─── RENDER PLATAFORMAS ───────────────────────────────────────
+// ─── PLATAFORMAS ─────────────────────────────────────────────────
 function renderPlatforms() {
     const grid = document.getElementById('platform-grid');
     PLATFORMS.forEach(p => {
         const c = document.createElement('div');
         c.className = 'pcard';
         c.style.cssText = `--pc:${p.color}`;
-        c.onclick = () => loadMovies(p);
+        c.onclick = () => loadCatalog(p);
         c.innerHTML = `
             <div class="pglow"></div>
             <div class="plogo"><img src="${p.logo}" alt="${p.name}"></div>
@@ -261,65 +305,52 @@ function renderPlatforms() {
     });
 }
 
-// ─── CARGAR CATÁLOGO ──────────────────────────────────────────
-async function loadMovies(p) {
-    showView('movies');
+// ─── CATÁLOGO ────────────────────────────────────────────────────
+async function loadCatalog(p) {
+    showView('catalog');
+    currentTab = 'all';
+    ['all','movie','tv'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t==='all'));
 
     const hero = document.getElementById('phero');
     hero.style.cssText = `--pc:${p.color}; border-left-color:${p.color}`;
     document.getElementById('hero-logo').src = p.logo;
     document.getElementById('hero-name').textContent = p.name;
-    document.getElementById('hero-sub').textContent = 'Cargando...';
+    document.getElementById('hero-sub').textContent = 'Cargando catálogo...';
 
-    const grid = document.getElementById('movies-grid');
-    grid.innerHTML = spinnerHTML('Buscando películas...');
+    const grid = document.getElementById('catalog-grid');
+    grid.innerHTML = spinnerHTML('Buscando películas y series...');
+    allItems = [];
 
     try {
-        // Intentamos con discover + watch_providers en varias regiones
-        const seen = new Set();
-        let movies = [];
-        for (const region of ['AR','US','MX','ES','BR']) {
-            try {
-                const data = await tmdb('/discover/movie', {
-                    sort_by: 'popularity.desc',
-                    with_watch_providers: p.pid,
-                    watch_region: region,
-                    page: 1
-                });
-                for (const m of (data.results||[])) {
-                    if (m.poster_path && !seen.has(m.id)) { seen.add(m.id); movies.push(m); }
-                }
-            } catch(e) { /* región sin resultados, continuar */ }
-            if (movies.length >= 20) break;
+        // Buscar películas Y series en paralelo
+        const [movies, series] = await Promise.all([
+            discoverByProvider(p.pid, 'movie'),
+            discoverByProvider(p.pid, 'tv')
+        ]);
+
+        // Intercalar: una película, una serie, así aparece contenido variado
+        const maxLen = Math.max(movies.length, series.length);
+        for (let i = 0; i < maxLen; i++) {
+            if (i < movies.length) allItems.push(movies[i]);
+            if (i < series.length) allItems.push(series[i]);
         }
 
-        // Fallback: popular general si no hay resultados con providers
-        if (movies.length === 0) {
-            const fallback = await tmdb('/movie/popular', { page: 1 });
-            movies = (fallback.results||[]).filter(m=>m.poster_path);
-            document.getElementById('hero-sub').textContent = `No encontramos catálogo específico — mostrando populares`;
-        } else {
-            document.getElementById('hero-sub').textContent = `${movies.length} títulos`;
+        const totalMovies = movies.length;
+        const totalSeries = series.length;
+
+        if (allItems.length === 0) {
+            document.getElementById('hero-sub').textContent = 'Sin resultados en tu región';
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:60px 0;text-align:center;color:var(--muted)">
+                <div style="font-size:2.5rem;margin-bottom:12px">🎬</div>
+                <p>No encontramos catálogo disponible para esta plataforma.<br>
+                Probá buscando un título específico en la barra de arriba.</p>
+            </div>`;
+            return;
         }
 
-        grid.innerHTML = '';
-        movies.forEach((m, i) => {
-            const yr   = m.release_date?.split('-')[0] ?? '';
-            const rat  = m.vote_average > 0 ? m.vote_average.toFixed(1) : null;
-            const card = document.createElement('div');
-            card.className = 'mcard';
-            card.style.animationDelay = Math.min(i*.04,.6)+'s';
-            card.innerHTML = `
-                <img src="${IMG}${m.poster_path}" alt="${m.title}" loading="lazy">
-                <div class="minfo">
-                    <div class="mtitle">${m.title}</div>
-                    <div class="mmeta">
-                        ${yr ? `<span>${yr}</span>` : ''}
-                        ${rat ? `<span class="mrating">★ ${rat}</span>` : ''}
-                    </div>
-                </div>`;
-            grid.appendChild(card);
-        });
+        document.getElementById('hero-sub').textContent =
+            `${totalMovies} películas · ${totalSeries} series`;
+        renderCatalogGrid(allItems);
 
     } catch(err) {
         document.getElementById('hero-sub').textContent = 'Error';
@@ -327,7 +358,46 @@ async function loadMovies(p) {
     }
 }
 
-// ─── BÚSQUEDA ─────────────────────────────────────────────────
+function switchTab(tab) {
+    currentTab = tab;
+    ['all','movie','tv'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t===tab));
+    const filtered = tab === 'all' ? allItems : allItems.filter(m => m._type === tab);
+    renderCatalogGrid(filtered);
+}
+
+function renderCatalogGrid(items) {
+    const grid = document.getElementById('catalog-grid');
+    grid.innerHTML = '';
+    if (!items.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted)">Sin resultados en esta categoría.</div>`;
+        return;
+    }
+    items.forEach((m, i) => {
+        const yr  = (m.release_date||m.first_air_date||'').split('-')[0];
+        const rat = m.vote_average > 0 ? m.vote_average.toFixed(1) : null;
+        const title = m.title || m.name || '';
+        const isTV  = m._type === 'tv';
+
+        const card = document.createElement('div');
+        card.className = 'mcard';
+        card.style.animationDelay = Math.min(i*.03,.5)+'s';
+        card.innerHTML = `
+            <div class="mcard-wrap">
+                <img src="${IMG}${m.poster_path}" alt="${title}" loading="lazy">
+                <span class="mcard-type">${isTV ? 'Serie' : 'Película'}</span>
+            </div>
+            <div class="minfo">
+                <div class="mtitle">${title}</div>
+                <div class="mmeta">
+                    ${yr ? `<span>${yr}</span>` : ''}
+                    ${rat ? `<span class="mrating">★ ${rat}</span>` : ''}
+                </div>
+            </div>`;
+        grid.appendChild(card);
+    });
+}
+
+// ─── BÚSQUEDA ────────────────────────────────────────────────────
 function setupSearch() {
     document.getElementById('search-input').addEventListener('input', function(){
         const q = this.value.trim();
@@ -342,48 +412,66 @@ async function runSearch(query) {
     showView('search');
     document.getElementById('stitle').textContent = `"${query}"`;
     document.getElementById('ssub').textContent = 'Buscando...';
-
     const cont = document.getElementById('search-results');
-    cont.innerHTML = spinnerHTML('Buscando en TMDB...');
+    cont.innerHTML = `<div class="spin-wrap"><div class="spinner"></div><span>Buscando en TMDB...</span></div>`;
 
     try {
-        const data = await tmdb('/search/movie', { query, page:1 });
-        const movies = (data.results||[]).filter(m=>m.poster_path).slice(0,20);
+        // Buscar películas Y series en paralelo
+        const [moviesData, tvData] = await Promise.all([
+            tmdb('/search/movie',     { query, page:1 }),
+            tmdb('/search/tv',        { query, page:1 }),
+        ]);
 
-        if (!movies.length) {
+        const movies = (moviesData.results||[]).filter(m=>m.poster_path).slice(0,10).map(m=>({...m,_type:'movie'}));
+        const series = (tvData.results||[]).filter(m=>m.poster_path).slice(0,10).map(m=>({...m,_type:'tv'}));
+
+        // Intercalar resultados
+        const combined = [];
+        const maxLen = Math.max(movies.length, series.length);
+        for (let i=0; i<maxLen; i++) {
+            if (i < movies.length) combined.push(movies[i]);
+            if (i < series.length) combined.push(series[i]);
+        }
+
+        if (!combined.length) {
             document.getElementById('ssub').textContent = 'Sin resultados';
-            cont.innerHTML = `<div style="padding:60px 0;text-align:center;color:var(--muted);">
+            cont.innerHTML = `<div style="padding:60px 0;text-align:center;color:var(--muted)">
                 <div style="font-size:2.5rem;margin-bottom:12px">🎬</div>
                 <p>No encontramos "${query}"</p></div>`;
             return;
         }
 
         document.getElementById('ssub').textContent = 'Verificando disponibilidad en plataformas...';
-        cont.innerHTML = spinnerHTML('Consultando plataformas...');
+        cont.innerHTML = `<div class="spin-wrap"><div class="spinner"></div><span>Consultando plataformas...</span></div>`;
 
-        // Para cada película buscar en qué plataformas está disponible
-        const enriched = await Promise.all(movies.map(async m => {
+        // Para cada resultado buscar en qué plataformas está
+        const enriched = await Promise.all(combined.map(async m => {
             try {
-                const pd = await tmdb(`/movie/${m.id}/watch/providers`);
-                const all = [
-                    ...((pd.results?.AR||{}).flatrate||[]),
-                    ...((pd.results?.US||{}).flatrate||[]),
-                    ...((pd.results?.MX||{}).flatrate||[]),
-                ];
+                const endpoint = m._type === 'tv' ? `/tv/${m.id}/watch/providers` : `/movie/${m.id}/watch/providers`;
+                const pd = await tmdb(endpoint);
+                // Recopilar flatrate de todas las regiones disponibles
+                const allFlatrate = [];
+                for (const region of Object.values(pd.results||{})) {
+                    allFlatrate.push(...(region.flatrate||[]));
+                }
                 const found = PLATFORMS
-                    .filter(p => all.some(f=>f.provider_id===p.pid))
+                    .filter(p => allFlatrate.some(f=>f.provider_id===p.pid))
                     .filter((p,i,a) => a.findIndex(x=>x.id===p.id)===i);
                 return {...m, platforms:found};
             } catch { return {...m, platforms:[]}; }
         }));
 
         document.getElementById('ssub').textContent =
-            `${enriched.length} resultado${enriched.length!==1?'s':''} encontrado${enriched.length!==1?'s':''}`;
+            `${enriched.length} resultado${enriched.length!==1?'s':''} · ${movies.length} películas, ${series.length} series`;
 
         cont.innerHTML = '';
         enriched.forEach((m, i) => {
-            const yr  = m.release_date?.split('-')[0] ?? '';
-            const rat = m.vote_average > 0 ? m.vote_average.toFixed(1) : null;
+            const isTV  = m._type === 'tv';
+            const title = m.title || m.name || '';
+            const orig  = m.original_title || m.original_name || '';
+            const yr    = (m.release_date||m.first_air_date||'').split('-')[0];
+            const rat   = m.vote_average > 0 ? m.vote_average.toFixed(1) : null;
+
             const pills = m.platforms.length
                 ? m.platforms.map(p=>`<span class="pill" style="color:${p.color};border-color:${p.color}40;background:${p.color}15">${p.name}</span>`).join('')
                 : `<span class="pill pill-none">No encontrada en streaming</span>`;
@@ -392,13 +480,14 @@ async function runSearch(query) {
             card.className = 'rcard';
             card.style.animationDelay = Math.min(i*.04,.6)+'s';
             card.innerHTML = `
-                <img class="rposter" src="${IMG}${m.poster_path}" alt="${m.title}" loading="lazy">
+                <img class="rposter" src="${IMG}${m.poster_path}" alt="${title}" loading="lazy">
                 <div class="rbody">
                     <div>
-                        <div class="rtitle">${m.title}</div>
-                        ${m.original_title && m.original_title!==m.title ? `<div class="rorig">${m.original_title}</div>` : ''}
+                        <div class="rtitle">${title}</div>
+                        ${orig && orig!==title ? `<div class="rorig">${orig}</div>` : ''}
                     </div>
                     <div class="rmeta">
+                        <span class="pill pill-type">${isTV?'Serie':'Película'}</span>
                         ${yr ? `<span>${yr}</span>` : ''}
                         ${rat ? `<span class="mrating">★ ${rat}</span>` : ''}
                     </div>
@@ -413,7 +502,7 @@ async function runSearch(query) {
     }
 }
 
-// ─── INICIO ───────────────────────────────────────────────────
+// ─── INICIO ──────────────────────────────────────────────────────
 renderPlatforms();
 setupSearch();
 </script>
