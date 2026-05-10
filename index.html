@@ -13,15 +13,27 @@
         .logo span { color: var(--accent); }
         .search-wrap { flex: 1; max-width: 400px; margin: 0 20px; }
         input { width: 100%; padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: #161e2e; color: white; outline: none; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Secciones */
+        .section-header { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 1px; margin: 30px 0 15px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+
         .platform-card { background: var(--surface); padding: 30px; border-radius: 15px; border-bottom: 5px solid var(--p-color); cursor: pointer; text-align: center; transition: 0.3s; }
         .platform-card:hover { transform: translateY(-5px); filter: brightness(1.2); }
-        .platform-card img { max-width: 120px; height: 50px; object-fit: contain; filter: brightness(0) invert(1); }
-        .movie-card { background: var(--surface); border-radius: 12px; overflow: hidden; position: relative; animation: fadeIn 0.5s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .platform-card img { max-width: 100px; height: 40px; object-fit: contain; filter: brightness(0) invert(1); }
+        
+        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid var(--border); }
+        .item-card:hover { transform: scale(1.03); border-color: var(--accent); }
         .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .movie-info { padding: 15px; }
-        .type-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; border: 1px solid var(--border); }
+        .item-info { padding: 12px; }
+        .item-title { font-size: 0.85rem; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Logos de plataforma en búsqueda */
+        .provider-container { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+        .provider-logo { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; background: #fff; padding: 2px; }
+
         .btn-back { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: none; }
     </style>
 </head>
@@ -30,7 +42,7 @@
 <header>
     <div class="logo" onclick="location.reload()" style="cursor:pointer">Stream<span>Vault</span></div>
     <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Buscar películas o series..." onkeyup="handleSearch(event)">
+        <input type="text" id="search-input" placeholder="Buscar en todas las plataformas..." onkeyup="handleSearch(event)">
     </div>
     <button class="btn-back" id="btn-back" onclick="location.reload()">← Volver</button>
 </header>
@@ -51,83 +63,98 @@
 
     function showPlatforms() {
         const container = document.getElementById('main-container');
-        container.innerHTML = '';
+        container.innerHTML = `<div class="section-header">Plataformas Disponibles</div><div class="grid" id="platform-grid"></div>`;
+        const grid = document.getElementById('platform-grid');
+        
         PLATFORMS.forEach(p => {
             const card = document.createElement('div');
             card.className = 'platform-card';
             card.style.setProperty('--p-color', p.color);
             card.onclick = () => loadCatalog(p);
-            card.innerHTML = `<img src="${p.logo}" alt="${p.name}"><p style="margin-top:10px; font-weight:bold; font-size:0.8rem">${p.name}</p>`;
-            container.appendChild(card);
+            card.innerHTML = `<img src="${p.logo}" alt="${p.name}">`;
+            grid.appendChild(card);
         });
     }
 
     async function loadCatalog(p) {
         document.getElementById('btn-back').style.display = 'block';
         const container = document.getElementById('main-container');
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align:center">Cargando cine y series de ${p.name}...</p>`;
+        container.innerHTML = `<p style="text-align:center">Sincronizando catálogo de ${p.name}...</p>`;
 
         try {
-            // Consultamos Películas Y Series por separado y las unimos
             const [moviesResp, tvResp] = await Promise.all([
                 fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${LANG}&sort_by=popularity.desc&with_watch_providers=${p.id}&watch_region=AR`),
                 fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&language=${LANG}&sort_by=popularity.desc&with_watch_providers=${p.id}&watch_region=AR`)
             ]);
 
-            const moviesData = await moviesResp.json();
-            const tvData = await tvResp.json();
+            const mData = await moviesResp.json();
+            const tData = await tvResp.json();
 
-            // Etiquetamos cada uno para saber qué es
-            const movies = moviesData.results.map(m => ({ ...m, type: 'Película' }));
-            const series = tvData.results.map(s => ({ ...s, type: 'Serie', title: s.name, release_date: s.first_air_date }));
+            container.innerHTML = `
+                <div class="section-header">Películas en ${p.name}</div>
+                <div class="grid" id="movie-grid"></div>
+                <div class="section-header">Series en ${p.name}</div>
+                <div class="grid" id="tv-grid"></div>
+            `;
 
-            // Mezclamos y ordenamos por popularidad
-            const combined = [...movies, ...series].sort((a, b) => b.popularity - a.popularity);
-            renderItems(combined);
-        } catch (e) {
-            container.innerHTML = '<p>Error al cargar el catálogo.</p>';
-        }
+            renderGrid(mData.results, 'movie-grid');
+            renderGrid(tData.results.map(s => ({...s, title: s.name})), 'tv-grid');
+
+        } catch (e) { container.innerHTML = '<p>Error al conectar.</p>'; }
     }
 
     async function handleSearch(event) {
         const q = event.target.value.trim();
-        if (q.length < 3) return;
-        document.getElementById('btn-back').style.display = 'block';
+        if (q.length < 3) { if(q.length === 0) showPlatforms(); return; }
         
-        // Usamos search/multi para buscar todo a la vez
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=${LANG}&query=${q}`;
-        const resp = await fetch(url);
+        document.getElementById('btn-back').style.display = 'block';
+        const container = document.getElementById('main-container');
+        container.innerHTML = '<p style="text-align:center">Buscando en todas las plataformas...</p>';
+
+        const resp = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=${LANG}&query=${q}`);
         const data = await resp.json();
         
-        const results = data.results.map(item => {
-            if (item.media_type === 'tv') {
-                return { ...item, type: 'Serie', title: item.name, release_date: item.first_air_date };
-            }
-            return { ...item, type: 'Película' };
-        }).filter(item => item.media_type !== 'person'); // Filtramos nombres de actores
+        container.innerHTML = `<div class="section-header">Resultados de búsqueda</div><div class="grid" id="search-grid"></div>`;
+        const grid = document.getElementById('search-grid');
 
-        renderItems(results);
+        for (const item of data.results) {
+            if (item.media_type === 'person' || !item.poster_path) continue;
+            
+            // Buscamos dónde se puede ver este item en Argentina
+            const provResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${API_KEY}`);
+            const provData = await provResp.json();
+            const arProviders = provData.results?.AR?.flatrate || [];
+
+            // Cruzamos con nuestros logos conocidos
+            const foundLogos = PLATFORMS.filter(p => arProviders.some(ap => ap.provider_id === p.id))
+                                       .map(p => `<img src="${p.logo}" class="provider-logo" title="${p.name}">`)
+                                       .join('');
+
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <img class="poster" src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+                <div class="item-info">
+                    <p class="item-title">${item.title || item.name}</p>
+                    <div class="provider-container">${foundLogos || '<span style="font-size:0.7rem;color:#666">Solo alquiler/compra</span>'}</div>
+                </div>`;
+            grid.appendChild(card);
+        }
     }
 
-    function renderItems(items) {
-        const container = document.getElementById('main-container');
-        container.innerHTML = '';
-        if (!items || items.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align:center">No se encontraron resultados.</p>';
-            return;
-        }
-        items.forEach(m => {
-            if (!m.poster_path) return;
+    function renderGrid(data, gridId) {
+        const grid = document.getElementById(gridId);
+        data.forEach(m => {
+            if(!m.poster_path) return;
             const card = document.createElement('div');
-            card.className = 'movie-card';
+            card.className = 'item-card';
             card.innerHTML = `
-                <div class="type-badge">${m.type}</div>
                 <img class="poster" src="https://image.tmdb.org/t/p/w500${m.poster_path}">
-                <div class="movie-info">
-                    <h3 style="font-size:0.9rem; margin:0; height: 2.4em; overflow: hidden;">${m.title}</h3>
-                    <p style="font-size:0.75rem; color:#888; margin:5px 0">★ ${m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</p>
+                <div class="item-info">
+                    <p class="item-title">${m.title}</p>
+                    <p style="font-size:0.7rem; color:var(--muted)">★ ${m.vote_average.toFixed(1)}</p>
                 </div>`;
-            container.appendChild(card);
+            grid.appendChild(card);
         });
     }
 
