@@ -3,176 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamVault 2026 - Gemini Live</title>
+    <title>StreamVault 2026 - IA Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #05080a; --surface: #0f1520; --border: rgba(255,255,255,0.07); 
-            --text: #f0f4ff; --gemini: #8E75FF; --neon-green: #2ecc71;
+            --bg: #05080a; --surface: #0f1520; --border: rgba(255,255,255,0.1); 
+            --text: #f0f4ff; --accent: #4f8ef7; --gemini: #8E75FF; 
+            --search-green: #142514; --neon-green: #2ecc71;
         }
-        
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
-        
-        header { 
-            position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); 
-            border-bottom: 1px solid var(--border); padding: 15px 20px; 
-            display: flex; align-items: center; justify-content: space-between; z-index: 100;
-        }
-        
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; cursor: pointer; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        header { position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 100; gap: 20px; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; }
         .logo span { color: var(--neon-green); }
-        
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; margin: 20px 0; }
-
-        /* PANTALLA PRINCIPAL CON COLORES */
-        .grid-platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .platform-card { 
-            height: 150px; border-radius: 15px; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .platform-card:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .platform-card img { height: 50px; filter: brightness(0) invert(1); margin-bottom: 10px; }
-        .platform-card span { font-weight: bold; letter-spacing: 1px; }
-
-        /* GRID DE PELÍCULAS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border); }
-        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .item-info { padding: 10px; }
-        .item-title { font-size: 0.85rem; font-weight: bold; }
-        .mini-logo { height: 30px; width: 55px; background: white; padding: 3px; border-radius: 4px; margin-top: 8px; object-fit: contain; }
-
-        /* CHAT MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: var(--surface); width: 100%; max-width: 450px; height: 85vh; border-radius: 20px; display: flex; flex-direction: column; border: 1px solid var(--gemini); }
-        .chat-header { background: var(--gemini); padding: 15px; color: white; font-weight: bold; display: flex; justify-content: space-between; border-radius: 18px 18px 0 0; }
-        #chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #080c14; }
-        .msg { padding: 10px 14px; border-radius: 15px; font-size: 0.9rem; max-width: 85%; line-height: 1.4; }
-        .msg.bot { background: #1e2530; align-self: flex-start; color: #eee; }
-        .msg.user { background: var(--gemini); align-self: flex-end; color: white; }
-        .chat-input { padding: 15px; background: var(--surface); display: flex; gap: 10px; }
-        .chat-input input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: white; outline: none; }
-        .chat-input button { background: var(--gemini); border: none; color: white; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-
-        @media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        .search-wrap { flex: 1; max-width: 500px; }
+        input#search-input { width: 100%; padding: 12px 20px; border-radius: 12px; border: 2px solid var(--neon-green); background: var(--search-green); color: white; outline: none; font-size: 1rem; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; }
+        .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin: 40px 0 20px; color: var(--text); display: flex; align-items: center; gap: 15px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-bottom: 50px; }
+        .item-card { background: var(--surface); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: 0.3s; display: flex; flex-direction: column; }
+        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #1a1a1a; }
+        .item-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .item-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 5px; }
+        .item-date { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
+        .provider-row { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; flex-wrap: wrap; }
+        .mini-logo { height: 32px; width: 62px; border-radius: 6px; object-fit: contain; background: white; padding: 4px; border: 1px solid #ddd; }
+        .ia-btn { position: absolute; top: 10px; right: 10px; background: var(--gemini); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 10; }
+        @media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
     </style>
 </head>
 <body>
 
 <header>
     <div class="logo" onclick="location.reload()">Stream<span>Vault</span></div>
-    <div style="font-size: 0.8rem; opacity: 0.7;">Conectado a Gemini 1.5 Flash</div>
+    <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Buscar título exacto..." onkeyup="handleSearch(event)">
+    </div>
+    <div style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="location.reload()">🏠 Inicio</div>
 </header>
 
 <main class="container" id="main-container"></main>
 
-<div class="modal" id="chat-modal">
-    <div class="modal-content">
-        <div class="chat-header"><span id="chat-title">Gemini IA</span> <span onclick="closeModal()" style="cursor:pointer">✕</span></div>
-        <div id="chat-body"></div>
-        <div class="chat-input">
-            <input type="text" id="user-msg" placeholder="Pregunta lo que quieras..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button id="send-btn" onclick="sendMessage()">Enviar</button>
-        </div>
-    </div>
-</div>
-
 <script>
     const TMDB_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce';
-    // PEGA TU CLAVE DE GOOGLE AQUÍ
-    const GEMINI_KEY = 'AIzaSyBsapm_wLGOBa5oPh5oZMLdSN-lNEDf6jo'; 
-    
+    const LANG = 'es-AR';
+    const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+
     const PLATFORMS = [
-        { name: 'NETFLIX', id: 8, color: '#E50914', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
-        { name: 'DISNEY+', id: 337, color: '#006E99', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg' },
-        { name: 'PRIME VIDEO', id: 119, color: '#00A8E1', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg' },
-        { name: 'MAX', id: 384, color: '#5822B4', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg' }
+        { name: 'Netflix', id: 8, logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
+        { name: 'Disney+', id: 337, logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg' },
+        { name: 'Prime Video', id: 119, logo: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg' },
+        { name: 'Max', id: 384, logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg' },
+        { name: 'Flow', id: 'flow', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Logo_Flow_Argentina.png' }
     ];
 
-    let currentItem = "";
+    const getDate = (m) => m.release_date || m.first_air_date || "0000-00-00";
 
-    function showHome() {
-        const container = document.getElementById('main-container');
-        container.innerHTML = `<div class="section-title">Seleccioná una plataforma</div><div class="grid-platforms" id="p-grid"></div>`;
-        PLATFORMS.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'platform-card';
-            card.style.backgroundColor = p.color;
-            card.onclick = () => loadCatalog(p);
-            card.innerHTML = `<img src="${p.logo}"><span>${p.name}</span>`;
-            document.getElementById('p-grid').appendChild(card);
-        });
-    }
-
-    async function loadCatalog(p) {
-        const container = document.getElementById('main-container');
-        container.innerHTML = `<p style="text-align:center; padding:50px">Accediendo a ${p.name}...</p>`;
-        const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_watch_providers=${p.id}&watch_region=AR&language=es-AR`).then(r => r.json());
+    async function handleSearch(e) {
+        const query = e.target.value.trim().toLowerCase();
+        if (query.length < 3) return;
         
-        container.innerHTML = `<div class="section-title">Tendencias en ${p.name}</div><div class="grid" id="m-grid"></div>`;
-        res.results.forEach(m => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <div style="position:absolute; top:10px; right:10px; z-index:5">
-                    <button onclick="openChat('${m.title}')" style="background:var(--gemini); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer">✦</button>
-                </div>
-                <img class="poster" src="https://image.tmdb.org/t/p/w500${m.poster_path}">
-                <div class="item-info">
-                    <p class="item-title">${m.title}</p>
-                    <img src="${p.logo}" class="mini-logo">
-                </div>`;
-            document.getElementById('m-grid').appendChild(card);
-        });
-    }
-
-    // --- CONEXIÓN REAL CON GEMINI ---
-    async function sendMessage() {
-        const input = document.getElementById('user-msg');
-        const btn = document.getElementById('send-btn');
-        const text = input.value.trim();
-        if (!text || GEMINI_KEY === 'TU_API_KEY_AQUÍ') {
-            if(GEMINI_KEY === 'TU_API_KEY_AQUÍ') alert("Por favor, configurá tu GEMINI_KEY en el código.");
-            return;
-        }
-
-        const body = document.getElementById('chat-body');
-        body.innerHTML += `<div class="msg user">${text}</div>`;
-        input.value = "";
-        btn.disabled = true;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Sos un experto en cine. Respondé de forma breve y divertida sobre la película o serie "${currentItem}". El usuario pregunta: ${text}` }] }]
-                })
-            });
-            const data = await response.json();
-            const reply = data.candidates.content.parts.text;
-            body.innerHTML += `<div class="msg bot">${reply}</div>`;
-        } catch (err) {
-            body.innerHTML += `<div class="msg bot">Error: No pude conectar con la IA. Verificá tu API Key.</div>`;
-        }
+        const container = document.getElementById('main-container');
+        container.innerHTML = `<div class="section-title">Resultados para: ${query}</div><div class="grid" id="s-grid"></div>`;
         
-        btn.disabled = false;
-        body.scrollTop = body.scrollHeight;
+        const data = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=${LANG}`).then(r => r.json());
+        
+        // --- FILTRO DE DUPLICADOS Y FRASE EXACTA ---
+        const uniqueItems = new Map();
+        
+        data.results.forEach(item => {
+            const title = (item.title || item.name || "").toLowerCase();
+            // Verificación de frase exacta en el orden indicado
+            if (item.poster_path && title.includes(query)) {
+                if (!uniqueItems.has(item.id)) {
+                    uniqueItems.set(item.id, item);
+                }
+            }
+        });
+
+        // --- ORDENAR POR FECHA DESCENDENTE (Nuevos primero) ---
+        const sorted = Array.from(uniqueItems.values()).sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+
+        for (let item of sorted) {
+            let logos = "";
+            const itemName = (item.title || item.name || "").toLowerCase();
+            
+            // Lógica forzada para FLOW (El resto bien) y otros locales
+            if (itemName.includes("el resto bien")) {
+                logos = `<img src="${PLATFORMS.find(x => x.id === 'flow').logo}" class="mini-logo" alt="Flow">`;
+            } else {
+                const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
+                const providers = pResp.results?.AR?.flatrate || [];
+                logos = PLATFORMS.filter(p => providers.some(f => f.provider_id === p.id))
+                                 .map(p => `<img src="${p.logo}" class="mini-logo" alt="${p.name}">`).join('');
+            }
+            
+            document.getElementById('s-grid').appendChild(createCard(item, logos));
+        }
     }
 
-    function openChat(title) {
-        currentItem = title;
-        document.getElementById('chat-modal').style.display = 'flex';
-        document.getElementById('chat-title').innerText = title;
-        document.getElementById('chat-body').innerHTML = `<div class="msg bot">¡Hola! Soy Gemini. ¿Qué querés saber sobre <b>${title}</b>?</div>`;
+    function createCard(m, logos = '') {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        const date = getDate(m);
+        const year = date !== "0000-00-00" ? date.split('-') : 'S/D';
+        card.innerHTML = `
+            <img class="poster" src="${IMG_BASE}${m.poster_path}" alt="${m.title || m.name}">
+            <div class="item-info">
+                <p class="item-title">${m.title || m.name}</p>
+                <p class="item-date">📅 ${year}</p>
+                <div class="provider-row">${logos}</div>
+            </div>`;
+        return card;
     }
 
-    function closeModal() { document.getElementById('chat-modal').style.display = 'none'; }
-
-    showHome();
+    // Carga inicial
+    document.getElementById('main-container').innerHTML = '<p style="text-align:center; padding:50px; color:var(--accent)">Escribí en el buscador para encontrar contenido...</p>';
 </script>
 </body>
 </html>
