@@ -1,0 +1,30 @@
+[
+  {
+    "platform": "Netflix",
+    "class": "netflix",
+    "color": "#E50914",
+    "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+    "movieId": "1032823"
+  },
+  {
+    "platform": "Disney+",
+    "class": "disney",
+    "color": "#006E99",
+    "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg",
+    "movieId": "653346"
+  },
+  {
+    "platform": "Prime Video",
+    "class": "prime",
+    "color": "#00A8E1",
+    "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    "movieId": "1014590"
+  },
+  {
+    "platform": "Max",
+    "class": "max",
+    "color": "#5822B4",
+    "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg",
+    "movieId": "786892"
+  }
+]
