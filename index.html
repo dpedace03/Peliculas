@@ -3,52 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamVault 2026 - Cine & Series</title>
+    <title>StreamVault 2026 - IA Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #080c12; --surface: #0f1520; --border: rgba(255,255,255,0.07); --text: #f0f4ff; --accent: #4f8ef7; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        :root { --bg: #080c12; --surface: #0f1520; --border: rgba(255,255,255,0.07); --text: #f0f4ff; --accent: #4f8ef7; --gemini: #8E75FF; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        
         header { position: sticky; top: 0; background: rgba(8,12,18,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; }
         .logo span { color: var(--accent); }
+        
         .search-wrap { flex: 1; max-width: 400px; margin: 0 20px; }
         input { width: 100%; padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: #161e2e; color: white; outline: none; }
         
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; }
         
-        /* Secciones */
-        .section-header { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 1px; margin: 30px 0 15px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        /* Títulos de Sección */
+        .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin: 40px 0 20px; color: var(--text); display: flex; align-items: center; gap: 15px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        .platform-card { background: var(--surface); padding: 30px; border-radius: 15px; border-bottom: 5px solid var(--p-color); cursor: pointer; text-align: center; transition: 0.3s; }
-        .platform-card:hover { transform: translateY(-5px); filter: brightness(1.2); }
-        .platform-card img { max-width: 100px; height: 40px; object-fit: contain; filter: brightness(0) invert(1); }
-        
-        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid var(--border); }
-        .item-card:hover { transform: scale(1.03); border-color: var(--accent); }
+        /* Grillas y Tiras */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-bottom: 50px; }
+
+        /* Tarjetas de Plataforma (Home) */
+        .platform-card { background: var(--surface); padding: 40px; border-radius: 20px; border-bottom: 5px solid var(--p-color); cursor: pointer; text-align: center; transition: 0.3s; }
+        .platform-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        .platform-card img { max-width: 120px; height: 50px; object-fit: contain; filter: brightness(0) invert(1); }
+
+        /* Tarjetas de Contenido */
+        .item-card { background: var(--surface); border-radius: 15px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid var(--border); }
+        .item-card:hover { transform: scale(1.04); border-color: var(--accent); }
         .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .item-info { padding: 12px; }
-        .item-title { font-size: 0.85rem; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Logos de plataforma en búsqueda */
-        .provider-container { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
-        .provider-logo { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; background: #fff; padding: 2px; }
+        .item-info { padding: 15px; }
+        .item-title { font-size: 0.9rem; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Icono de IA Gemini */
+        .ia-btn { position: absolute; top: 10px; right: 10px; background: var(--gemini); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; z-index: 10; }
+        .ia-btn:hover { transform: rotate(15deg) scale(1.1); background: #7c5fff; }
+        .ia-btn svg { width: 20px; height: 20px; fill: white; }
 
-        .btn-back { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: none; }
+        /* Logos en Búsqueda */
+        .provider-row { display: flex; gap: 8px; margin-top: 10px; min-height: 25px; }
+        .mini-logo { height: 18px; width: 18px; border-radius: 4px; object-fit: contain; background: white; padding: 2px; border: 1px solid #ddd; }
+
+        .btn-back { background: var(--surface); color: white; border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; cursor: pointer; display: none; }
+
+        /* Chat Modal Simulado */
+        .chat-modal { position: fixed; bottom: 20px; right: 20px; width: 350px; height: 450px; background: var(--surface); border: 1px solid var(--gemini); border-radius: 20px; z-index: 1000; display: none; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .chat-header { background: var(--gemini); padding: 15px; border-radius: 18px 18px 0 0; display: flex; justify-content: space-between; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo" onclick="location.reload()" style="cursor:pointer">Stream<span>Vault</span></div>
+    <div class="logo" onclick="location.reload()">Stream<span>Vault</span></div>
     <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Buscar en todas las plataformas..." onkeyup="handleSearch(event)">
+        <input type="text" id="search-input" placeholder="Buscar películas o series..." onkeyup="handleSearch(event)">
     </div>
     <button class="btn-back" id="btn-back" onclick="location.reload()">← Volver</button>
 </header>
 
 <main class="container" id="main-container">
     </main>
+
+<div class="chat-modal" id="chat-modal">
+    <div class="chat-header">
+        <span>Gemini IA Assistant</span>
+        <span style="cursor:pointer" onclick="closeChat()">✕</span>
+    </div>
+    <div id="chat-content" style="flex:1; padding:15px; font-size:0.85rem; overflow-y:auto; color:#ccc;">
+        Preguntame lo que quieras sobre esta película...
+    </div>
+    <div style="padding:10px; border-top:1px solid var(--border)">
+        <input type="text" placeholder="Escribe tu pregunta..." style="width:100%; font-size:0.8rem">
+    </div>
+</div>
 
 <script>
     const API_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce'; 
@@ -63,9 +93,8 @@
 
     function showPlatforms() {
         const container = document.getElementById('main-container');
-        container.innerHTML = `<div class="section-header">Plataformas Disponibles</div><div class="grid" id="platform-grid"></div>`;
+        container.innerHTML = `<div class="section-title">Nuestras Plataformas</div><div class="grid" id="platform-grid"></div>`;
         const grid = document.getElementById('platform-grid');
-        
         PLATFORMS.forEach(p => {
             const card = document.createElement('div');
             card.className = 'platform-card';
@@ -79,28 +108,28 @@
     async function loadCatalog(p) {
         document.getElementById('btn-back').style.display = 'block';
         const container = document.getElementById('main-container');
-        container.innerHTML = `<p style="text-align:center">Sincronizando catálogo de ${p.name}...</p>`;
+        container.innerHTML = `<p style="text-align:center; margin-top:50px;">Abriendo caja fuerte de ${p.name}...</p>`;
 
         try {
-            const [moviesResp, tvResp] = await Promise.all([
+            const [mResp, tResp] = await Promise.all([
                 fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${LANG}&sort_by=popularity.desc&with_watch_providers=${p.id}&watch_region=AR`),
                 fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&language=${LANG}&sort_by=popularity.desc&with_watch_providers=${p.id}&watch_region=AR`)
             ]);
 
-            const mData = await moviesResp.json();
-            const tData = await tvResp.json();
+            const mData = await mResp.json();
+            const tData = await tResp.json();
 
             container.innerHTML = `
-                <div class="section-header">Películas en ${p.name}</div>
-                <div class="grid" id="movie-grid"></div>
-                <div class="section-header">Series en ${p.name}</div>
+                <div class="section-title">Series Destacadas</div>
                 <div class="grid" id="tv-grid"></div>
+                <div class="section-title">Películas Imperdibles</div>
+                <div class="grid" id="movie-grid"></div>
             `;
 
-            renderGrid(mData.results, 'movie-grid');
-            renderGrid(tData.results.map(s => ({...s, title: s.name})), 'tv-grid');
+            renderItems(tData.results.map(s => ({...s, title: s.name})), 'tv-grid');
+            renderItems(mData.results, 'movie-grid');
 
-        } catch (e) { container.innerHTML = '<p>Error al conectar.</p>'; }
+        } catch (e) { container.innerHTML = '<p>Error al cargar el catálogo.</p>'; }
     }
 
     async function handleSearch(event) {
@@ -109,54 +138,65 @@
         
         document.getElementById('btn-back').style.display = 'block';
         const container = document.getElementById('main-container');
-        container.innerHTML = '<p style="text-align:center">Buscando en todas las plataformas...</p>';
-
+        container.innerHTML = '<div class="section-title">Resultados de búsqueda</div><div class="grid" id="search-grid"></div>';
+        
         const resp = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=${LANG}&query=${q}`);
         const data = await resp.json();
         
-        container.innerHTML = `<div class="section-header">Resultados de búsqueda</div><div class="grid" id="search-grid"></div>`;
         const grid = document.getElementById('search-grid');
 
         for (const item of data.results) {
             if (item.media_type === 'person' || !item.poster_path) continue;
             
-            // Buscamos dónde se puede ver este item en Argentina
-            const provResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${API_KEY}`);
-            const provData = await provResp.json();
-            const arProviders = provData.results?.AR?.flatrate || [];
+            // Buscar proveedores para mostrar logos
+            const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${API_KEY}`);
+            const pData = await pResp.json();
+            const providers = pData.results?.AR?.flatrate || [];
 
-            // Cruzamos con nuestros logos conocidos
-            const foundLogos = PLATFORMS.filter(p => arProviders.some(ap => ap.provider_id === p.id))
-                                       .map(p => `<img src="${p.logo}" class="provider-logo" title="${p.name}">`)
-                                       .join('');
+            const logosHtml = PLATFORMS.filter(p => providers.some(ap => ap.provider_id === p.id))
+                                       .map(p => `<img src="${p.logo}" class="mini-logo">`).join('');
 
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
+                <button class="ia-btn" onclick="openChat('${item.title || item.name}')">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L14.85 8.65L22 10L16.85 14.85L18.25 22L12 18.65L5.75 22L7.15 14.85L2 10L9.15 8.65L12 2Z"/></svg>
+                </button>
                 <img class="poster" src="https://image.tmdb.org/t/p/w500${item.poster_path}">
                 <div class="item-info">
                     <p class="item-title">${item.title || item.name}</p>
-                    <div class="provider-container">${foundLogos || '<span style="font-size:0.7rem;color:#666">Solo alquiler/compra</span>'}</div>
+                    <div class="provider-row">${logosHtml}</div>
                 </div>`;
             grid.appendChild(card);
         }
     }
 
-    function renderGrid(data, gridId) {
+    function renderItems(data, gridId) {
         const grid = document.getElementById(gridId);
         data.forEach(m => {
             if(!m.poster_path) return;
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
+                <button class="ia-btn" onclick="openChat('${m.title}')">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L14.85 8.65L22 10L16.85 14.85L18.25 22L12 18.65L5.75 22L7.15 14.85L2 10L9.15 8.65L12 2Z"/></svg>
+                </button>
                 <img class="poster" src="https://image.tmdb.org/t/p/w500${m.poster_path}">
                 <div class="item-info">
                     <p class="item-title">${m.title}</p>
-                    <p style="font-size:0.7rem; color:var(--muted)">★ ${m.vote_average.toFixed(1)}</p>
+                    <p style="font-size:0.7rem; color:#888; margin-top:5px;">★ ${m.vote_average.toFixed(1)}</p>
                 </div>`;
             grid.appendChild(card);
         });
     }
+
+    function openChat(title) {
+        const modal = document.getElementById('chat-modal');
+        modal.style.display = 'flex';
+        document.getElementById('chat-content').innerHTML = `Hola! Soy Gemini. Estoy analizando <b>${title}</b>. <br><br>¿Qué te gustaría saber? Puedo decirte curiosidades, si vale la pena verla o explicarte el final.`;
+    }
+
+    function closeChat() { document.getElementById('chat-modal').style.display = 'none'; }
 
     showPlatforms();
 </script>
