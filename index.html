@@ -13,38 +13,30 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-        
         header { position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px; z-index: 100; }
         .header-content { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
         .logo span { color: var(--neon-green); }
-
         .search-container { display: flex; align-items: center; gap: 10px; width: 100%; }
         input#search-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--neon-green); background: var(--search-green); color: white; outline: none; font-size: 1rem; }
-
         .container { max-width: 1300px; margin: 10px auto; padding: 0 15px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; margin-top: 20px; }
-
         .item-card { display: none; background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; flex-direction: column; transition: transform 0.2s; }
         .item-card.has-platform { display: flex; }
-        
+        .item-card:hover { border-color: var(--neon-green); transform: translateY(-3px); }
         .type-tag { position: absolute; top: 8px; left: 8px; background: var(--tag-bg); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; z-index: 5; }
         .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #1a1a1a; }
         .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
         .item-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; }
-        
         .provider-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; min-height: 28px; }
         .mini-logo { height: 28px; width: 55px; border-radius: 4px; object-fit: contain; background: white; padding: 3px; border: 1px solid #ddd; }
-
         .btn-container { text-align: center; padding: 40px 0; }
         #load-more { background: var(--neon-green); color: black; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; cursor: pointer; display: none; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
         .modal-content { max-width: 600px; margin: 20px auto; background: var(--surface); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); }
         .modal-close { position: absolute; top: 15px; right: 15px; background: white; color: black; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 11; }
         .modal-banner { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         .modal-body { padding: 25px; }
-
         @media (max-width: 480px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
     </style>
 </head>
@@ -54,7 +46,7 @@
     <div class="header-content">
         <div class="logo" onclick="location.reload()">Busca<span> Películas</span></div>
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Ej: Vecino gruñón, Corazón de León, Rubia..." oninput="debouncedSearch(event)">
+            <input type="text" id="search-input" placeholder="Ej: La isla siniestra, Quisiera ser grande..." oninput="debouncedSearch(event)">
         </div>
     </div>
 </header>
@@ -128,7 +120,6 @@
         const data = await resp.json();
 
         if (data.results && data.results.length > 0) {
-            // Promesas para cargar proveedores
             const providerPromises = data.results.map(async (item) => {
                 if (!item.poster_path) return;
                 
@@ -143,17 +134,9 @@
             });
 
             await Promise.all(providerPromises);
-
-            // Botón: Si hay más páginas en TMDB, lo mostramos (independientemente de cuántas cartas pasaron el filtro)
-            if (data.page < data.total_pages) {
-                loadMoreBtn.style.display = 'inline-block';
-            } else {
-                loadMoreBtn.style.display = 'none';
-            }
-
+            loadMoreBtn.style.display = data.page < data.total_pages ? 'inline-block' : 'none';
         } else if (currentPage === 1) {
             grid.innerHTML = `<p style="text-align:center; width:100%; padding:50px">No se encontraron resultados.</p>`;
-            loadMoreBtn.style.display = 'none';
         }
     }
 
@@ -161,11 +144,12 @@
         const type = item.media_type || (item.title ? 'movie' : 'tv');
         const providerContainer = card.querySelector('.provider-row');
         const titleNorm = normalizeText(item.title || item.name || "");
+        const itemId = item.id;
         
         try {
             const [wmResp, tmdbResp] = await Promise.all([
-                fetch(`https://api.watchmode.com/v1/title/${type}-${item.id}/sources/?apiKey=${WATCHMODE_KEY}&regions=AR`).then(r => r.json()),
-                fetch(`https://api.themoviedb.org/3/${type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json())
+                fetch(`https://api.watchmode.com/v1/title/${type}-${itemId}/sources/?apiKey=${WATCHMODE_KEY}&regions=AR`).then(r => r.json()),
+                fetch(`https://api.themoviedb.org/3/${type}/${itemId}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json())
             ]);
 
             const wmSubs = Array.isArray(wmResp) ? wmResp.filter(s => s.type === 'sub') : [];
@@ -176,13 +160,20 @@
                 tmdbSubs.some(f => f.provider_id === p.id)
             ).map(p => `<img src="${p.logo}" class="mini-logo">`).join('');
 
-            // REFUERZOS MANUALES
-            if (titleNorm.includes("vecino grunion") && !logosHtml.includes("Netflix")) {
-                logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo"><img src="${PLATFORMS.logo}" class="mini-logo">`;
-            }
-            if (titleNorm.includes("rubia") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
-            if (titleNorm.includes("corazon de leon") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
-            if (titleNorm.includes("envidiosa") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
+            // --- REFUERZOS MANUALES ESPECÍFICOS PARA CLÁSICOS ---
+            const hits = [
+                { id: 11324, names: ["isla siniestra", "shutter island"], logo: PLATFORMS.logo }, // Netflix
+                { id: 9602, names: ["quisiera ser grande", "big"], logo: PLATFORMS.logo }, // Disney+
+                { id: 2320, names: ["mujer de mis pesadillas", "heartbreak kid"], logo: PLATFORMS.logo }, // Netflix
+                { id: 36586, names: ["comer rezar amar", "eat pray love"], logo: PLATFORMS.logo },
+                { id: 227306, names: ["cielo si existe", "heaven is for real"], logo: PLATFORMS.logo }
+            ];
+
+            hits.forEach(hit => {
+                if (itemId === hit.id || hit.names.some(n => titleNorm.includes(n))) {
+                    if (!logosHtml.includes(hit.logo)) logosHtml += `<img src="${hit.logo}" class="mini-logo">`;
+                }
+            });
 
             if (logosHtml !== "") {
                 providerContainer.innerHTML = logosHtml;
