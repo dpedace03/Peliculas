@@ -3,47 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamVault 2026 - IA Edition</title>
+    <title>Busca peliculas - IA Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #05080a; --surface: #0f1520; --border: rgba(255,255,255,0.1); 
-            --text: #f0f4ff; --accent: #4f8ef7; --gemini: #8E75FF; 
-            --search-green: #142514; --neon-green: #2ecc71;
+            --text: #f0f4ff; --accent: #4f8ef7; --neon-green: #2ecc71;
+            --search-green: #142514;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-        header { position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 100; gap: 20px; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; }
+        
+        header { 
+            position: sticky; top: 0; background: rgba(5,8,10,0.95); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); 
+            padding: 15px; z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1300px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .top-row { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
         .logo span { color: var(--neon-green); }
-        .search-wrap { flex: 1; max-width: 500px; }
-        input#search-input { width: 100%; padding: 12px 20px; border-radius: 12px; border: 2px solid var(--neon-green); background: var(--search-green); color: white; outline: none; font-size: 1rem; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
-        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; }
-        .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin: 40px 0 20px; color: var(--text); display: flex; align-items: center; gap: 15px; }
+
+        .search-container { 
+            display: flex; align-items: center; gap: 10px; width: 100%;
+        }
+        .search-label { 
+            font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; 
+            letter-spacing: 1px; color: var(--text); white-space: nowrap;
+        }
+        .search-wrap { flex: 1; position: relative; }
+        input#search-input { 
+            width: 100%; padding: 12px 15px; border-radius: 10px; 
+            border: 2px solid var(--neon-green); background: var(--search-green); 
+            color: white; outline: none; font-size: 1rem;
+        }
+
+        .container { max-width: 1300px; margin: 10px auto; padding: 0 15px; }
+        .section-title { 
+            font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; 
+            letter-spacing: 1.5px; margin: 25px 0 15px; display: flex; 
+            align-items: center; gap: 10px; 
+        }
         .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .item-card { background: var(--surface); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: 0.3s; display: flex; flex-direction: column; }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 15px; margin-bottom: 40px; 
+        }
+
+        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
         .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #1a1a1a; }
-        .item-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-        .item-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 5px; }
-        .item-date { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
-        .provider-row { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; flex-wrap: wrap; }
-        .mini-logo { height: 32px; width: 62px; border-radius: 6px; object-fit: contain; background: white; padding: 4px; border: 1px solid #ddd; }
-        .ia-btn { position: absolute; top: 10px; right: 10px; background: var(--gemini); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 10; }
-        @media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
+        .item-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; line-height: 1.2; }
+        .item-date { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; }
+        
+        .provider-row { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+        .mini-logo { height: 28px; width: 55px; border-radius: 4px; object-fit: contain; background: white; padding: 3px; border: 1px solid #ddd; }
+
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .search-label { font-size: 1rem; }
+            .logo { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo" onclick="location.reload()">Stream<span>Vault</span></div>
-    <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Buscar título exacto..." onkeyup="handleSearch(event)">
+    <div class="header-content">
+        <div class="top-row">
+            <div class="logo" onclick="location.reload()">Busca<span> peliculas</span></div>
+            <div style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="location.reload()">🏠 Inicio</div>
+        </div>
+        
+        <div class="search-container">
+            <label class="search-label" for="search-input">Título:</label>
+            <div class="search-wrap">
+                <input type="text" id="search-input" placeholder="Ej: Once Nueva..." onkeyup="handleSearch(event)">
+            </div>
+        </div>
     </div>
-    <div style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="location.reload()">🏠 Inicio</div>
 </header>
 
-<main class="container" id="main-container"></main>
+<main class="container" id="main-container">
+    <p style="text-align:center; padding:40px; color:var(--accent); font-size: 0.9rem;">
+        Escribí el nombre de una película o serie para ver dónde está disponible.
+    </p>
+</main>
 
 <script>
     const TMDB_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce';
@@ -65,41 +117,44 @@
         if (query.length < 3) return;
         
         const container = document.getElementById('main-container');
-        container.innerHTML = `<div class="section-title">Resultados para: ${query}</div><div class="grid" id="s-grid"></div>`;
+        container.innerHTML = `<div class="section-title">Resultados</div><div class="grid" id="s-grid"></div>`;
         
         const data = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=${LANG}`).then(r => r.json());
         
-        // --- FILTRO DE DUPLICADOS Y FRASE EXACTA ---
         const uniqueItems = new Map();
         
-        data.results.forEach(item => {
+        for (let item of data.results) {
             const title = (item.title || item.name || "").toLowerCase();
-            // Verificación de frase exacta en el orden indicado
+            
+            // Búsqueda por frase exacta y existencia de poster
             if (item.poster_path && title.includes(query)) {
-                if (!uniqueItems.has(item.id)) {
+                let logosHtml = "";
+
+                if (title.includes("el resto bien")) {
+                    logosHtml = `<img src="${PLATFORMS.find(x => x.id === 'flow').logo}" class="mini-logo" alt="Flow">`;
+                } else {
+                    const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
+                    const providers = pResp.results?.AR?.flatrate || [];
+                    logosHtml = PLATFORMS.filter(p => providers.some(f => f.provider_id === p.id))
+                                     .map(p => `<img src="${p.logo}" class="mini-logo">`).join('');
+                }
+
+                // Filtrar por plataformas autorizadas y evitar duplicados
+                if (logosHtml !== "" && !uniqueItems.has(item.id)) {
+                    item.customLogos = logosHtml;
                     uniqueItems.set(item.id, item);
                 }
             }
-        });
+        }
 
-        // --- ORDENAR POR FECHA DESCENDENTE (Nuevos primero) ---
+        // Orden cronológico descendente
         const sorted = Array.from(uniqueItems.values()).sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+        const grid = document.getElementById('s-grid');
 
-        for (let item of sorted) {
-            let logos = "";
-            const itemName = (item.title || item.name || "").toLowerCase();
-            
-            // Lógica forzada para FLOW (El resto bien) y otros locales
-            if (itemName.includes("el resto bien")) {
-                logos = `<img src="${PLATFORMS.find(x => x.id === 'flow').logo}" class="mini-logo" alt="Flow">`;
-            } else {
-                const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
-                const providers = pResp.results?.AR?.flatrate || [];
-                logos = PLATFORMS.filter(p => providers.some(f => f.provider_id === p.id))
-                                 .map(p => `<img src="${p.logo}" class="mini-logo" alt="${p.name}">`).join('');
-            }
-            
-            document.getElementById('s-grid').appendChild(createCard(item, logos));
+        if (sorted.length === 0) {
+            container.innerHTML = `<p style="text-align:center; padding:50px">No disponible en las plataformas seleccionadas.</p>`;
+        } else {
+            sorted.forEach(item => grid.appendChild(createCard(item, item.customLogos)));
         }
     }
 
@@ -117,9 +172,6 @@
             </div>`;
         return card;
     }
-
-    // Carga inicial
-    document.getElementById('main-container').innerHTML = '<p style="text-align:center; padding:50px; color:var(--accent)">Escribí en el buscador para encontrar contenido...</p>';
 </script>
 </body>
 </html>
