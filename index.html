@@ -3,74 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca peliculas - IA Edition</title>
+    <title>Busca peliculas - Argentina Direct</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #05080a; --surface: #0f1520; --border: rgba(255,255,255,0.1); 
             --text: #f0f4ff; --accent: #4f8ef7; --neon-green: #2ecc71;
-            --search-green: #142514;
+            --search-green: #142514; --tag-bg: rgba(0, 0, 0, 0.75);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        header { 
-            position: sticky; top: 0; background: rgba(5,8,10,0.95); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); 
-            padding: 15px; z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1300px; margin: 0 auto;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-
+        header { position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px; z-index: 100; }
+        .header-content { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
         .logo span { color: var(--neon-green); }
 
-        .search-container { 
-            display: flex; align-items: center; gap: 10px; width: 100%;
-        }
-        .search-label { 
-            font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; 
-            letter-spacing: 1px; color: var(--text); white-space: nowrap;
-        }
-        .search-wrap { flex: 1; position: relative; }
-        input#search-input { 
-            width: 100%; padding: 12px 15px; border-radius: 10px; 
-            border: 2px solid var(--neon-green); background: var(--search-green); 
-            color: white; outline: none; font-size: 1rem;
-        }
+        .search-container { display: flex; align-items: center; gap: 10px; width: 100%; }
+        .search-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--text); white-space: nowrap; }
+        input#search-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--neon-green); background: var(--search-green); color: white; outline: none; font-size: 1rem; }
 
         .container { max-width: 1300px; margin: 10px auto; padding: 0 15px; }
-        .section-title { 
-            font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; 
-            letter-spacing: 1.5px; margin: 25px 0 15px; display: flex; 
-            align-items: center; gap: 10px; 
-        }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; margin-top: 20px; }
 
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-            gap: 15px; margin-bottom: 40px; 
-        }
-
-        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
-        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #1a1a1a; }
-        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .item-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; line-height: 1.2; }
-        .item-date { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; }
+        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .item-card:active { transform: scale(0.96); }
+        .type-tag { position: absolute; top: 8px; left: 8px; background: var(--tag-bg); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; z-index: 5; border: 1px solid rgba(255,255,255,0.1); }
+        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
+        .item-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; }
         
-        .provider-row { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+        .provider-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
         .mini-logo { height: 28px; width: 55px; border-radius: 4px; object-fit: contain; background: white; padding: 3px; border: 1px solid #ddd; }
 
-        @media (max-width: 480px) {
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .search-label { font-size: 1rem; }
-            .logo { font-size: 1.5rem; }
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
+        .modal-content { max-width: 600px; margin: 20px auto; background: var(--surface); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: white; color: black; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 11; }
+        .modal-banner { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .modal-body { padding: 25px; }
+        .modal-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
+        .age-badge { border: 1px solid #777; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
+        .season-count { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+        .modal-genres { color: #aaa; font-size: 0.85rem; }
+        .modal-overview { line-height: 1.6; color: #ddd; margin-top: 15px; font-size: 1rem; }
+
+        @media (max-width: 480px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .logo { font-size: 1.5rem; } }
     </style>
 </head>
 <body>
@@ -81,26 +59,39 @@
             <div class="logo" onclick="location.reload()">Busca<span> peliculas</span></div>
             <div style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="location.reload()">🏠 Inicio</div>
         </div>
-        
         <div class="search-container">
-            <label class="search-label" for="search-input">Título:</label>
-            <div class="search-wrap">
-                <input type="text" id="search-input" placeholder="Ej: Once Nueva..." onkeyup="handleSearch(event)">
-            </div>
+            <label class="search-label">Título:</label>
+            <input type="text" id="search-input" placeholder="Ej: Once, El resto bien..." onkeyup="handleSearch(event)">
         </div>
     </div>
 </header>
 
 <main class="container" id="main-container">
-    <p style="text-align:center; padding:40px; color:var(--accent); font-size: 0.9rem;">
-        Escribí el nombre de una película o serie para ver dónde está disponible.
-    </p>
+    <p style="text-align:center; padding:50px; color:var(--accent)">Ingresá un título para ver su disponibilidad en Argentina.</p>
 </main>
+
+<div id="detail-modal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="document.getElementById('detail-modal').style.display='none'">✕</button>
+        <img id="m-banner" class="modal-banner" src="" alt="">
+        <div class="modal-body">
+            <h2 id="m-title" style="margin-bottom:12px; font-size: 1.8rem;"></h2>
+            <div class="modal-meta">
+                <span id="m-age" class="age-badge"></span>
+                <span id="m-seasons" class="season-count"></span>
+                <span id="m-genres" class="modal-genres"></span>
+            </div>
+            <p id="m-overview" class="modal-overview"></p>
+            <div id="m-providers" class="provider-row" style="margin-top:25px"></div>
+        </div>
+    </div>
+</div>
 
 <script>
     const TMDB_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce';
     const LANG = 'es-AR';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+    const BACKDROP_BASE = 'https://image.tmdb.org/t/p/w1280';
 
     const PLATFORMS = [
         { name: 'Netflix', id: 8, logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
@@ -113,65 +104,88 @@
     const getDate = (m) => m.release_date || m.first_air_date || "0000-00-00";
 
     async function handleSearch(e) {
-        const query = e.target.value.trim().toLowerCase();
-        if (query.length < 3) return;
+        let q = e.target.value.trim().toLowerCase();
+        if (q.length < 3) return;
         
+        let apiQuery = q.replace(/once/g, "o11ce");
         const container = document.getElementById('main-container');
-        container.innerHTML = `<div class="section-title">Resultados</div><div class="grid" id="s-grid"></div>`;
+        container.innerHTML = `<div class="grid" id="s-grid"></div>`;
         
-        const data = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=${LANG}`).then(r => r.json());
-        
+        const data = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(apiQuery)}&language=${LANG}`).then(r => r.json());
         const uniqueItems = new Map();
         
         for (let item of data.results) {
             const title = (item.title || item.name || "").toLowerCase();
-            
-            // Búsqueda por frase exacta y existencia de poster
-            if (item.poster_path && title.includes(query)) {
-                let logosHtml = "";
-
-                if (title.includes("el resto bien")) {
+            if (item.poster_path && (title.includes(q) || title.includes("o11ce"))) {
+                
+                // CONSULTA ESTRICTA DE ARGENTINA
+                const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
+                const provs = pResp.results?.AR?.flatrate || [];
+                
+                let logosHtml = PLATFORMS.filter(p => provs.some(f => f.provider_id === p.id))
+                                         .map(p => `<img src="${p.logo}" class="mini-logo" alt="${p.name}">`).join('');
+                
+                // Excepción solo para Flow porque es una plataforma local de AR que a veces falta en TMDB
+                if (title.includes("el resto bien") && logosHtml === "") {
                     logosHtml = `<img src="${PLATFORMS.find(x => x.id === 'flow').logo}" class="mini-logo" alt="Flow">`;
-                } else {
-                    const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
-                    const providers = pResp.results?.AR?.flatrate || [];
-                    logosHtml = PLATFORMS.filter(p => providers.some(f => f.provider_id === p.id))
-                                     .map(p => `<img src="${p.logo}" class="mini-logo">`).join('');
                 }
 
-                // Filtrar por plataformas autorizadas y evitar duplicados
                 if (logosHtml !== "" && !uniqueItems.has(item.id)) {
-                    item.customLogos = logosHtml;
+                    item.htmlLogos = logosHtml;
                     uniqueItems.set(item.id, item);
                 }
             }
         }
 
-        // Orden cronológico descendente
-        const sorted = Array.from(uniqueItems.values()).sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+        const sorted = Array.from(uniqueItems.values()).sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
         const grid = document.getElementById('s-grid');
-
+        
         if (sorted.length === 0) {
-            container.innerHTML = `<p style="text-align:center; padding:50px">No disponible en las plataformas seleccionadas.</p>`;
+            container.innerHTML = `<p style="text-align:center; padding:50px">No disponible en plataformas autorizadas de Argentina.</p>`;
         } else {
-            sorted.forEach(item => grid.appendChild(createCard(item, item.customLogos)));
+            sorted.forEach(m => grid.appendChild(createCard(m)));
         }
     }
 
-    function createCard(m, logos = '') {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        const date = getDate(m);
-        const year = date !== "0000-00-00" ? date.split('-') : 'S/D';
-        card.innerHTML = `
-            <img class="poster" src="${IMG_BASE}${m.poster_path}" alt="${m.title || m.name}">
+    function createCard(m) {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.onclick = () => showDetail(m.id, m.media_type, m.htmlLogos);
+        div.innerHTML = `
+            <div class="type-tag">${m.media_type === 'tv' ? 'Serie' : 'Película'}</div>
+            <img class="poster" src="${IMG_BASE}${m.poster_path}">
             <div class="item-info">
                 <p class="item-title">${m.title || m.name}</p>
-                <p class="item-date">📅 ${year}</p>
-                <div class="provider-row">${logos}</div>
+                <div class="provider-row">${m.htmlLogos}</div>
             </div>`;
-        return card;
+        return div;
     }
+
+    async function showDetail(id, type, logosHtml) {
+        const m = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=${LANG}&append_to_response=release_dates,content_ratings`).then(r => r.json());
+        
+        document.getElementById('m-banner').src = (m.backdrop_path || m.poster_path) ? BACKDROP_BASE + (m.backdrop_path || m.poster_path) : '';
+        document.getElementById('m-title').innerText = m.title || m.name;
+        document.getElementById('m-overview').innerText = m.overview || "Sinopsis no disponible.";
+        document.getElementById('m-genres').innerText = m.genres.map(g => g.name).join(' • ');
+        document.getElementById('m-providers').innerHTML = logosHtml;
+
+        document.getElementById('m-seasons').innerText = type === 'tv' ? `${m.number_of_seasons} Temporadas` : '';
+
+        let age = "T";
+        if (type === 'movie') {
+            const cert = m.release_dates?.results?.find(r => r.iso_3166_1 === 'AR' || r.iso_3166_1 === 'US');
+            age = cert?.release_dates?.certification || "13+";
+        } else {
+            const cert = m.content_ratings?.results?.find(r => r.iso_3166_1 === 'AR' || r.iso_3166_1 === 'US');
+            age = cert?.rating || "16+";
+        }
+        document.getElementById('m-age').innerText = age.includes('+') ? age : age + '+';
+        
+        document.getElementById('detail-modal').style.display = 'block';
+    }
+
+    function closeModal(e) { if(e.target.id === 'detail-modal') e.target.style.display = 'none'; }
 </script>
 </body>
 </html>
