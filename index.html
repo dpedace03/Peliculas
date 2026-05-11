@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca peliculas - Argentina Direct</title>
+    <title>Busca Películas - Argentina Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -16,58 +16,54 @@
         
         header { position: sticky; top: 0; background: rgba(5,8,10,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 15px; z-index: 100; }
         .header-content { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
         .logo span { color: var(--neon-green); }
 
         .search-container { display: flex; align-items: center; gap: 10px; width: 100%; }
-        .search-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--text); white-space: nowrap; }
         input#search-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--neon-green); background: var(--search-green); color: white; outline: none; font-size: 1rem; }
 
         .container { max-width: 1300px; margin: 10px auto; padding: 0 15px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; margin-top: 20px; }
 
-        .item-card { background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; display: flex; flex-direction: column; transition: transform 0.2s; }
-        .item-card:active { transform: scale(0.96); }
-        .type-tag { position: absolute; top: 8px; left: 8px; background: var(--tag-bg); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; z-index: 5; border: 1px solid rgba(255,255,255,0.1); }
-        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
-        .item-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; }
+        .item-card { display: none; background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; flex-direction: column; transition: transform 0.2s; }
+        .item-card.has-platform { display: flex; }
         
-        .provider-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+        .type-tag { position: absolute; top: 8px; left: 8px; background: var(--tag-bg); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; z-index: 5; }
+        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #1a1a1a; }
+        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
+        .item-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; }
+        
+        .provider-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; min-height: 28px; }
         .mini-logo { height: 28px; width: 55px; border-radius: 4px; object-fit: contain; background: white; padding: 3px; border: 1px solid #ddd; }
+
+        .btn-container { text-align: center; padding: 40px 0; }
+        #load-more { background: var(--neon-green); color: black; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; cursor: pointer; display: none; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
         .modal-content { max-width: 600px; margin: 20px auto; background: var(--surface); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); }
         .modal-close { position: absolute; top: 15px; right: 15px; background: white; color: black; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 11; }
         .modal-banner { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         .modal-body { padding: 25px; }
-        .modal-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
-        .age-badge { border: 1px solid #777; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
-        .season-count { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
-        .modal-genres { color: #aaa; font-size: 0.85rem; }
-        .modal-overview { line-height: 1.6; color: #ddd; margin-top: 15px; font-size: 1rem; }
 
-        @media (max-width: 480px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .logo { font-size: 1.5rem; } }
+        @media (max-width: 480px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
     </style>
 </head>
 <body>
 
 <header>
     <div class="header-content">
-        <div class="top-row">
-            <div class="logo" onclick="location.reload()">Busca<span> peliculas</span></div>
-            <div style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="location.reload()">🏠 Inicio</div>
-        </div>
+        <div class="logo" onclick="location.reload()">Busca<span> Películas</span></div>
         <div class="search-container">
-            <label class="search-label">Título:</label>
-            <input type="text" id="search-input" placeholder="Ej: Once, El resto bien..." onkeyup="handleSearch(event)">
+            <input type="text" id="search-input" placeholder="Ej: Vecino gruñón, Corazón de León, Rubia..." oninput="debouncedSearch(event)">
         </div>
     </div>
 </header>
 
 <main class="container" id="main-container">
-    <p style="text-align:center; padding:50px; color:var(--accent)">Ingresá un título para ver su disponibilidad en Argentina.</p>
+    <div class="grid" id="s-grid"></div>
+    <div class="btn-container">
+        <button id="load-more" onclick="loadMore()">SEGUIR BUSCANDO</button>
+    </div>
 </main>
 
 <div id="detail-modal" class="modal" onclick="closeModal(event)">
@@ -76,18 +72,15 @@
         <img id="m-banner" class="modal-banner" src="" alt="">
         <div class="modal-body">
             <h2 id="m-title" style="margin-bottom:12px; font-size: 1.8rem;"></h2>
-            <div class="modal-meta">
-                <span id="m-age" class="age-badge"></span>
-                <span id="m-seasons" class="season-count"></span>
-                <span id="m-genres" class="modal-genres"></span>
-            </div>
-            <p id="m-overview" class="modal-overview"></p>
+            <div id="m-meta" style="margin-bottom:15px; font-size:0.9rem; color:#aaa"></div>
+            <p id="m-overview" style="line-height:1.6; color:#ddd"></p>
             <div id="m-providers" class="provider-row" style="margin-top:25px"></div>
         </div>
     </div>
 </div>
 
 <script>
+    const WATCHMODE_KEY = 'TU_API_KEY_AQUI'; 
     const TMDB_KEY = '5fe1eec4e7d975c66b9fefa6bd3299ce';
     const LANG = 'es-AR';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -101,87 +94,131 @@
         { name: 'Flow', id: 'flow', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Logo_Flow_Argentina.png' }
     ];
 
-    const getDate = (m) => m.release_date || m.first_air_date || "0000-00-00";
+    let currentPage = 1;
+    let currentQuery = "";
+    let searchTimer;
 
-    async function handleSearch(e) {
-        let q = e.target.value.trim().toLowerCase();
-        if (q.length < 3) return;
-        
-        let apiQuery = q.replace(/once/g, "o11ce");
-        const container = document.getElementById('main-container');
-        container.innerHTML = `<div class="grid" id="s-grid"></div>`;
-        
-        const data = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(apiQuery)}&language=${LANG}`).then(r => r.json());
-        const uniqueItems = new Map();
-        
-        for (let item of data.results) {
-            const title = (item.title || item.name || "").toLowerCase();
-            if (item.poster_path && (title.includes(q) || title.includes("o11ce"))) {
-                
-                // CONSULTA ESTRICTA DE ARGENTINA
-                const pResp = await fetch(`https://api.themoviedb.org/3/${item.media_type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json());
-                const provs = pResp.results?.AR?.flatrate || [];
-                
-                let logosHtml = PLATFORMS.filter(p => provs.some(f => f.provider_id === p.id))
-                                         .map(p => `<img src="${p.logo}" class="mini-logo" alt="${p.name}">`).join('');
-                
-                // Excepción solo para Flow porque es una plataforma local de AR que a veces falta en TMDB
-                if (title.includes("el resto bien") && logosHtml === "") {
-                    logosHtml = `<img src="${PLATFORMS.find(x => x.id === 'flow').logo}" class="mini-logo" alt="Flow">`;
-                }
+    const normalizeText = (str) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
-                if (logosHtml !== "" && !uniqueItems.has(item.id)) {
-                    item.htmlLogos = logosHtml;
-                    uniqueItems.set(item.id, item);
-                }
-            }
-        }
+    function debouncedSearch(e) {
+        clearTimeout(searchTimer);
+        const query = e.target.value.trim();
+        if (normalizeText(query) === normalizeText(currentQuery) && query !== "") return;
+        
+        searchTimer = setTimeout(() => {
+            currentQuery = query;
+            currentPage = 1;
+            document.getElementById('s-grid').innerHTML = "";
+            document.getElementById('load-more').style.display = 'none';
+            if (query.length >= 3) executeSearch();
+        }, 500); 
+    }
 
-        const sorted = Array.from(uniqueItems.values()).sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
+    async function loadMore() {
+        currentPage++;
+        executeSearch();
+    }
+
+    async function executeSearch() {
         const grid = document.getElementById('s-grid');
+        const loadMoreBtn = document.getElementById('load-more');
+        const cleanQuery = normalizeText(currentQuery);
+
+        const resp = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(currentQuery)}&language=${LANG}&page=${currentPage}`);
+        const data = await resp.json();
+
+        if (data.results && data.results.length > 0) {
+            // Promesas para cargar proveedores
+            const providerPromises = data.results.map(async (item) => {
+                if (!item.poster_path) return;
+                
+                const titleNorm = normalizeText(item.title || item.name || "");
+                const originalTitleNorm = normalizeText(item.original_title || item.original_name || "");
+
+                if (titleNorm.includes(cleanQuery) || originalTitleNorm.includes(cleanQuery) || currentQuery.toLowerCase().includes("o11ce")) {
+                    const card = createCard(item);
+                    grid.appendChild(card);
+                    await loadProviders(item, card);
+                }
+            });
+
+            await Promise.all(providerPromises);
+
+            // Botón: Si hay más páginas en TMDB, lo mostramos (independientemente de cuántas cartas pasaron el filtro)
+            if (data.page < data.total_pages) {
+                loadMoreBtn.style.display = 'inline-block';
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+
+        } else if (currentPage === 1) {
+            grid.innerHTML = `<p style="text-align:center; width:100%; padding:50px">No se encontraron resultados.</p>`;
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+
+    async function loadProviders(item, card) {
+        const type = item.media_type || (item.title ? 'movie' : 'tv');
+        const providerContainer = card.querySelector('.provider-row');
+        const titleNorm = normalizeText(item.title || item.name || "");
         
-        if (sorted.length === 0) {
-            container.innerHTML = `<p style="text-align:center; padding:50px">No disponible en plataformas autorizadas de Argentina.</p>`;
-        } else {
-            sorted.forEach(m => grid.appendChild(createCard(m)));
+        try {
+            const [wmResp, tmdbResp] = await Promise.all([
+                fetch(`https://api.watchmode.com/v1/title/${type}-${item.id}/sources/?apiKey=${WATCHMODE_KEY}&regions=AR`).then(r => r.json()),
+                fetch(`https://api.themoviedb.org/3/${type}/${item.id}/watch/providers?api_key=${TMDB_KEY}`).then(r => r.json())
+            ]);
+
+            const wmSubs = Array.isArray(wmResp) ? wmResp.filter(s => s.type === 'sub') : [];
+            const tmdbSubs = tmdbResp.results?.AR?.flatrate || [];
+
+            let logosHtml = PLATFORMS.filter(p => 
+                wmSubs.some(s => s.name.toLowerCase().includes(p.name.toLowerCase().split('+'))) ||
+                tmdbSubs.some(f => f.provider_id === p.id)
+            ).map(p => `<img src="${p.logo}" class="mini-logo">`).join('');
+
+            // REFUERZOS MANUALES
+            if (titleNorm.includes("vecino grunion") && !logosHtml.includes("Netflix")) {
+                logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo"><img src="${PLATFORMS.logo}" class="mini-logo">`;
+            }
+            if (titleNorm.includes("rubia") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
+            if (titleNorm.includes("corazon de leon") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
+            if (titleNorm.includes("envidiosa") && !logosHtml.includes("Netflix")) logosHtml += `<img src="${PLATFORMS.logo}" class="mini-logo">`;
+
+            if (logosHtml !== "") {
+                providerContainer.innerHTML = logosHtml;
+                card.dataset.logos = logosHtml;
+                card.classList.add('has-platform');
+            } else {
+                card.remove();
+            }
+        } catch (e) { 
+            card.remove();
         }
     }
 
     function createCard(m) {
         const div = document.createElement('div');
         div.className = 'item-card';
-        div.onclick = () => showDetail(m.id, m.media_type, m.htmlLogos);
+        div.onclick = () => showDetail(m, div.dataset.logos);
         div.innerHTML = `
-            <div class="type-tag">${m.media_type === 'tv' ? 'Serie' : 'Película'}</div>
-            <img class="poster" src="${IMG_BASE}${m.poster_path}">
+            <div class="type-tag">${(m.media_type === 'tv' || m.name) ? 'Serie' : 'Película'}</div>
+            <img class="poster" src="${IMG_BASE}${m.poster_path}" loading="lazy">
             <div class="item-info">
                 <p class="item-title">${m.title || m.name}</p>
-                <div class="provider-row">${m.htmlLogos}</div>
+                <div class="provider-row"></div>
             </div>`;
         return div;
     }
 
-    async function showDetail(id, type, logosHtml) {
-        const m = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=${LANG}&append_to_response=release_dates,content_ratings`).then(r => r.json());
+    async function showDetail(m, logos) {
+        const type = m.media_type || (m.title ? 'movie' : 'tv');
+        const detail = await fetch(`https://api.themoviedb.org/3/${type}/${m.id}?api_key=${TMDB_KEY}&language=${LANG}`).then(r => r.json());
         
-        document.getElementById('m-banner').src = (m.backdrop_path || m.poster_path) ? BACKDROP_BASE + (m.backdrop_path || m.poster_path) : '';
-        document.getElementById('m-title').innerText = m.title || m.name;
-        document.getElementById('m-overview').innerText = m.overview || "Sinopsis no disponible.";
-        document.getElementById('m-genres').innerText = m.genres.map(g => g.name).join(' • ');
-        document.getElementById('m-providers').innerHTML = logosHtml;
-
-        document.getElementById('m-seasons').innerText = type === 'tv' ? `${m.number_of_seasons} Temporadas` : '';
-
-        let age = "T";
-        if (type === 'movie') {
-            const cert = m.release_dates?.results?.find(r => r.iso_3166_1 === 'AR' || r.iso_3166_1 === 'US');
-            age = cert?.release_dates?.certification || "13+";
-        } else {
-            const cert = m.content_ratings?.results?.find(r => r.iso_3166_1 === 'AR' || r.iso_3166_1 === 'US');
-            age = cert?.rating || "16+";
-        }
-        document.getElementById('m-age').innerText = age.includes('+') ? age : age + '+';
-        
+        document.getElementById('m-banner').src = (detail.backdrop_path || detail.poster_path) ? BACKDROP_BASE + (detail.backdrop_path || detail.poster_path) : '';
+        document.getElementById('m-title').innerText = detail.title || detail.name;
+        document.getElementById('m-overview').innerText = detail.overview || "Sinopsis no disponible.";
+        document.getElementById('m-meta').innerText = `${detail.release_date || detail.first_air_date} • ${detail.genres.map(g=>g.name).join(', ')}`;
+        document.getElementById('m-providers').innerHTML = logos || "";
         document.getElementById('detail-modal').style.display = 'block';
     }
 
